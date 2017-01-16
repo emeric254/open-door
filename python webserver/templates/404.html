@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Error 404 - Page not found</title>
+        <style type="text/css">
+            *{
+                height:100%;
+                margin:0;
+                padding:0;
+                overflow:hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <style type="text/css" media="screen"></style>
+        <canvas id = 'c'></canvas>
+        <script type="text/javascript">
+            var c = document.getElementById("c");
+            var ctx = c.getContext("2d");
+            var cw = c.width = window.innerWidth;
+            var ch = c.height = window.innerHeight;
+            var howMany = 75;
+            var rad = (Math.PI / 180);
+            var kappa = 0.5522847498;
+            var a = 3 * Math.PI / 4;
+            var Rgrd = Math.sqrt(ch * ch + (cw / 2) * (cw / 2))
+            var grd = ctx.createRadialGradient(cw / 2, 0, 0, cw / 2, 0, Rgrd); // x0, y0, r0, x1, y1, r1
+            grd.addColorStop(0, "#badbf5");
+            grd.addColorStop(.35, "#53a5dd");
+            grd.addColorStop(.75, "#306eab");
+            grd.addColorStop(1, "#22417a");
+            ctx.fillStyle = grd;
+            ctx.strokeStyle = 'rgba(200,200,200,.3)';
+            function elementArray() {
+                this.cx = Math.round(Math.random() * cw) + 1;
+                this.cy = Math.round(Math.random() * ch) + 1;
+                this.x = this.cx;
+                this.y = this.cy;
+                this.rw = randomIntFromInterval(5, 25);
+                var deformation = randomIntFromInterval(75, 95) / 100;
+                this.rh = ~~(this.rw * deformation);
+                this.a = (Math.round(Math.random() * 360) + 1) * rad;
+                this.driftFlag = Math.random() < 0.5 ? false : true;
+                this.lift = randomIntFromInterval(2, 10) / 10;
+                this.grd = Grd(this.cx, this.cy, this.rw);
+            }
+            var e1 = []; /*ellipses*/
+            for (var i = 0; i < howMany; i++) {
+                e1[i] = new elementArray();
+            }
+            function ellipse(cx, cy, w, h, a, fill) {
+                var x0 = cx + w * Math.cos(a);
+                var y0 = cy + w * Math.sin(a);
+                ctx.save();
+                ctx.fillStyle = fill;
+                ctx.font="30px Verdana";
+                ctx.fillText("404",x0,y0);
+                ctx.fill();
+                ctx.restore();
+            }
+            function Grd(x, y, r) {
+                grd = ctx.createRadialGradient(x, y - r / 20 * r, 0, x, y - r / 20 * r, r);
+                grd.addColorStop(1, 'rgba(186,219,245,.7)');
+                return grd;
+            }
+            function randomIntFromInterval(mn, mx) {
+                return Math.floor(Math.random() * (mx - mn + 1) + mn);
+            }
+            function Draw() {
+                ctx.fillRect(0, 0, cw, ch);
+                for (var j = 0; j < e1.length; j++) {
+                    // lift
+                    if (e1[j].cy < -1 * e1[j].rw) {
+                        e1[j].cy = ch + e1[j].rw;
+                    } else {
+                        e1[j].cy -= e1[j].lift;
+                    }
+                    // drift
+                    if (e1[j].cx <= e1[j].x - 10) {
+                        e1[j].driftFlag = true;
+                    } else if (e1[j].cx >= e1[j].x + 10) {
+                        e1[j].driftFlag = false;
+                    }
+                    if (e1[j].driftFlag) {
+                        e1[j].cx += .15;
+                    } else {
+                        e1[j].cx -= .15;
+                    }
+                    // grd
+                    e1[j].grd = Grd(e1[j].cx, e1[j].cy, e1[j].rw);
+                    ellipse(e1[j].cx, e1[j].cy, e1[j].rw, e1[j].rh, e1[j].a, e1[j].grd);
+                }
+                requestId = window.requestAnimationFrame(Draw);
+            }
+            //Draw()
+            requestId = window.requestAnimationFrame(Draw);
+        </script>
+    </body>
+</html>
