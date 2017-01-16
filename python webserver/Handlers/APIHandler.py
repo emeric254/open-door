@@ -34,10 +34,9 @@ class CommonAPIHandler(tornado.web.RequestHandler):
                 self.write({'statusText': 'door opened'})
                 return
             elif path_request == '/open/fence':
-                return self.send_error(501)
-                # self.arduino.send_msg('open fence')
-                # self.arduino.wait_answer('opening fence')
-                # self.write({'statusText': 'fence opened'})
-                # return
+                self.arduino.send_msg('open fence')
+                self.arduino.wait_answer('opening fence')
+                self.write({'statusText': 'fence opened'})
+                return
         self.send_error(status_code=400, reason='bad request')
         return
